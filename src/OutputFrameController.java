@@ -353,7 +353,13 @@ public class OutputFrameController {
     }
 
     private void moveBot() {
-        int[] botMove = this.bot.move();
+        int depth = 4;
+        if (this.roundsLeft < depth) {
+            depth = this.roundsLeft;
+        }
+        int[] botMove = this.bot.makeBestMove(this.buttons, depth, this.playerXScore, this.playerOScore, this.isBotFirst);
+//        int[] botMove = this.bot.makeBestHillClimbMove(this.buttons);
+//        int[] botMove = this.bot.randomRestart(this.buttons, this.roundsLeft, this.isBotFirst);
         int i = botMove[0];
         int j = botMove[1];
 
