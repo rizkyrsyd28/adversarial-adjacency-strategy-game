@@ -1,3 +1,5 @@
+package controllers;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 
 import java.io.IOException;
+
+import bot.Bot;
+import bot.GeneticBot;
+import bot.LocalSearchBot;
+import bot.MinimaxBot;
 
 /**
  * The OutputFrameController class.  It controls button input from the users when
@@ -50,8 +57,8 @@ public class OutputFrameController {
     private int playerOScore;
     private int roundsLeft;
     private boolean isBotFirst;
-    private Bot bot;
-
+    private Bot bot1;
+    private Bot bot2;
 
     private static final int ROW = 8;
     private static final int COL = 8;
@@ -69,7 +76,7 @@ public class OutputFrameController {
      * @param isBotFirst True if bot is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst){
+    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String algo1, String algo2, boolean isVSBot){
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
@@ -77,7 +84,7 @@ public class OutputFrameController {
         this.isBotFirst = isBotFirst;
 
         // Start bot
-        this.bot = new MinimaxBot();
+        this.bot1 = new MinimaxBot();
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {
             this.moveBot();
@@ -360,7 +367,7 @@ public class OutputFrameController {
 //        int[] botMove = this.bot.makeBestHillClimbMove(this.buttons);
 //        int[] botMove = this.bot.randomRestart(this.buttons, this.roundsLeft, this.isBotFirst);
 //        int[] botMove = this.bot.hillClimb(this.buttons, this.roundsLeft, this.isBotFirst);
-        int[] botMove = this.bot.move(this);
+        int[] botMove = this.bot1.move(this);
         int i = botMove[0];
         int j = botMove[1];
 

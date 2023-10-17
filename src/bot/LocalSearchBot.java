@@ -1,5 +1,9 @@
+package bot;
+
 import java.util.Comparator;
 import java.util.PriorityQueue;
+
+import controllers.OutputFrameController;
 
 public class LocalSearchBot extends Bot {
     @Override

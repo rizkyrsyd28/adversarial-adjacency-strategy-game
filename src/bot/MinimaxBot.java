@@ -1,4 +1,8 @@
+package bot;
+
+import controllers.OutputFrameController;
 import javafx.scene.control.Button;
+import utils.UtilityFunction;
 
 public class MinimaxBot extends Bot {
 
