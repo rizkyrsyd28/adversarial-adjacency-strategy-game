@@ -77,7 +77,7 @@ public class OutputFrameController {
         this.isBotFirst = isBotFirst;
 
         // Start bot
-        this.bot = new Bot();
+        this.bot = new MinimaxBot();
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {
             this.moveBot();
@@ -87,9 +87,8 @@ public class OutputFrameController {
 
 
     /**
-     * Construct the 8x8 game board by creating a total of 64 buttons in a 2
-     * dimensional array, and construct the 8x2 score board for scorekeeping
-     * and then initialize turn and score.
+     * Construct the 8x8 game board by creating a total of 64 buttons in a 2-dimensional
+     * array, and construct the 8x2 score board for score keeping and then initialize turn and score.
      *
      */
     @FXML
@@ -353,13 +352,15 @@ public class OutputFrameController {
     }
 
     private void moveBot() {
-        int depth = 4;
-        if (this.roundsLeft < depth) {
-            depth = this.roundsLeft;
-        }
-        int[] botMove = this.bot.makeBestMove(this.buttons, depth, this.playerXScore, this.playerOScore, this.isBotFirst);
+//        int depth = 4;
+//        if (this.roundsLeft < depth) {
+//            depth = this.roundsLeft;
+//        }
+//        int[] botMove = this.bot.makeBestMove(this.buttons, depth, this.playerXScore, this.playerOScore, this.isBotFirst);
 //        int[] botMove = this.bot.makeBestHillClimbMove(this.buttons);
 //        int[] botMove = this.bot.randomRestart(this.buttons, this.roundsLeft, this.isBotFirst);
+//        int[] botMove = this.bot.hillClimb(this.buttons, this.roundsLeft, this.isBotFirst);
+        int[] botMove = this.bot.move(this);
         int i = botMove[0];
         int j = botMove[1];
 
@@ -370,5 +371,25 @@ public class OutputFrameController {
         }
 
         this.selectedCoordinates(i, j);
+    }
+
+    public int getPlayerXScore() {
+        return playerXScore;
+    }
+
+    public int getPlayerOScore() {
+        return playerOScore;
+    }
+
+    public int getRoundsLeft() {
+        return roundsLeft;
+    }
+
+    public boolean isBotFirst() {
+        return isBotFirst;
+    }
+
+    public Button[][] getButtons() {
+        return buttons;
     }
 }
