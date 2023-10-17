@@ -52,7 +52,7 @@ public class OutputFrameController {
     private boolean isBotFirst;
     private Bot bot1;
     private Bot bot2;
-
+private 
 
     private static final int ROW = 8;
     private static final int COL = 8;
@@ -76,6 +76,7 @@ public class OutputFrameController {
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
         this.isBotFirst = isBotFirst;
+        this.
 
         // Start bot
         this.bot1 = new Bot();
