@@ -31,6 +31,15 @@ public class InputFrameController{
 
     @FXML
     private ComboBox<String> numberOfRounds;
+    
+    @FXML
+    private CheckBox isBotVsBot;
+    
+    @FXML
+    private ComboBox<String> algo1;
+
+    @FXML
+    private ComboBox<String> algo2;
 
 
     /**
@@ -43,7 +52,11 @@ public class InputFrameController{
         ObservableList<String> numberOfRoundsDropdown = FXCollections.observableArrayList(
                 "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28");
+        ObservableList<String> algoDropdown = FXCollections.observableArrayList(
+                "Local Search (HC)", "Min Max", "Genetic Algorithm");
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
+        this.algo1.setItems(algoDropdown);
+        this.algo2.setItems(algoDropdown);
         this.numberOfRounds.getSelectionModel().select(0);
     }
 
@@ -58,6 +71,8 @@ public class InputFrameController{
         this.player1.setText("");
         this.player2.setText("");
         this.numberOfRounds.getSelectionModel().select(0);
+        this.algo1.getSelectionModel().select(0);
+        this.algo2.getSelectionModel().select(0);
     }
 
 
@@ -80,7 +95,7 @@ public class InputFrameController{
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected(), this.algo1.getValue(), this.algo2.getValue(), this.isBotVsBot.isSelected());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
