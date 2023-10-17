@@ -1,3 +1,5 @@
+package controllers;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 
 import java.io.IOException;
+
+import bot.Bot;
+import bot.GeneticBot;
+import bot.LocalSearchBot;
+import bot.MinimaxBot;
 
 /**
  * The OutputFrameController class.  It controls button input from the users when
@@ -52,7 +59,6 @@ public class OutputFrameController {
     private boolean isBotFirst;
     private Bot bot1;
     private Bot bot2;
-private 
 
     private static final int ROW = 8;
     private static final int COL = 8;
@@ -76,10 +82,9 @@ private
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
         this.isBotFirst = isBotFirst;
-        this.
 
         // Start bot
-        this.bot1 = new Bot();
+        this.bot1 = new MinimaxBot();
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {
             this.moveBot();
@@ -89,9 +94,8 @@ private
 
 
     /**
-     * Construct the 8x8 game board by creating a total of 64 buttons in a 2
-     * dimensional array, and construct the 8x2 score board for scorekeeping
-     * and then initialize turn and score.
+     * Construct the 8x8 game board by creating a total of 64 buttons in a 2-dimensional
+     * array, and construct the 8x2 score board for score keeping and then initialize turn and score.
      *
      */
     @FXML
@@ -355,13 +359,15 @@ private
     }
 
     private void moveBot() {
-        int depth = 4;
-        if (this.roundsLeft < depth) {
-            depth = this.roundsLeft;
-        }
-        int[] botMove = this.bot.makeBestMove(this.buttons, depth, this.playerXScore, this.playerOScore, this.isBotFirst);
+//        int depth = 4;
+//        if (this.roundsLeft < depth) {
+//            depth = this.roundsLeft;
+//        }
+//        int[] botMove = this.bot.makeBestMove(this.buttons, depth, this.playerXScore, this.playerOScore, this.isBotFirst);
 //        int[] botMove = this.bot.makeBestHillClimbMove(this.buttons);
 //        int[] botMove = this.bot.randomRestart(this.buttons, this.roundsLeft, this.isBotFirst);
+//        int[] botMove = this.bot.hillClimb(this.buttons, this.roundsLeft, this.isBotFirst);
+        int[] botMove = this.bot1.move(this);
         int i = botMove[0];
         int j = botMove[1];
 
@@ -372,5 +378,25 @@ private
         }
 
         this.selectedCoordinates(i, j);
+    }
+
+    public int getPlayerXScore() {
+        return playerXScore;
+    }
+
+    public int getPlayerOScore() {
+        return playerOScore;
+    }
+
+    public int getRoundsLeft() {
+        return roundsLeft;
+    }
+
+    public boolean isBotFirst() {
+        return isBotFirst;
+    }
+
+    public Button[][] getButtons() {
+        return buttons;
     }
 }

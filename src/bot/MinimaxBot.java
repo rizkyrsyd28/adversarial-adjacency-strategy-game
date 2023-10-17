@@ -1,52 +1,51 @@
+package bot;
+
+import controllers.OutputFrameController;
 import javafx.scene.control.Button;
+import utils.UtilityFunction;
 
-import java.util.*;
+public class MinimaxBot extends Bot {
 
-public class Bot {
+    @Override
+    public int[] move(OutputFrameController of) {
 
-    /**
-     * Finds the best move for the bot player in the Adjacency Strategy Game using the Minimax algorithm with Alpha-Beta Pruning.
-     *
-     * @param buttons     The current state of the game board represented as a 2D array of Buttons.
-     * @param roundsLeft  The number of rounds left in the game.
-     * @param xScore      The score of the X player.
-     * @param oScore      The score of the O player.
-     * @param isBotFirst  Indicates whether the bot is the first player.
-     * @return An array of length 2 representing the row and column indices of the best move for the bot.
-     */
-    public int[] makeBestMove(Button[][] buttons, int roundsLeft, int xScore, int oScore, boolean isBotFirst) {
+        int depthLimit = 4;
+        if (of.getRoundsLeft() < depthLimit) {
+            depthLimit = of.getRoundsLeft();
+        }
+
         int bestScore = Integer.MIN_VALUE, nextRound;
-        if (isBotFirst) {
-            nextRound = roundsLeft;
+        if (of.isBotFirst()) {
+            nextRound = depthLimit;
         } else {
-            nextRound = roundsLeft - 1;
+            nextRound = depthLimit - 1;
         }
         int[] bestMove = new int[2];
 
-        for (int i = 0; i < buttons.length; i++) {
-            for (int j = 0; j < buttons[i].length; j++) {
-                if (UtilityFunction.isWorthy(buttons, i, j, "X")) {
+        for (int i = 0; i < of.getButtons().length; i++) {
+            for (int j = 0; j < of.getButtons()[i].length; j++) {
+                if (UtilityFunction.isWorthy(of.getButtons(), i, j, "X")) {
                     int oIncrement = 0;
-                    buttons[i][j].setText("O");
+                    of.getButtons()[i][j].setText("O");
                     boolean up = false, right = false, down = false, left = false;
-                    if (i - 1 >= 0 && buttons[i - 1][j].getText().equals("X")) {
+                    if (i - 1 >= 0 && of.getButtons()[i - 1][j].getText().equals("X")) {
                         up = true;
-                        buttons[i - 1][j].setText("O");
+                        of.getButtons()[i - 1][j].setText("O");
                         oIncrement++;
                     }
-                    if (j + 1 < 8 && buttons[i][j + 1].getText().equals("X")) {
+                    if (j + 1 < 8 && of.getButtons()[i][j + 1].getText().equals("X")) {
                         oIncrement++;
-                        buttons[i][j + 1].setText("O");
+                        of.getButtons()[i][j + 1].setText("O");
                         right = true;
                     }
-                    if (i + 1 < 8 && buttons[i + 1][j].getText().equals("X")) {
+                    if (i + 1 < 8 && of.getButtons()[i + 1][j].getText().equals("X")) {
                         oIncrement++;
-                        buttons[i + 1][j].setText("O");
+                        of.getButtons()[i + 1][j].setText("O");
                         down = true;
                     }
-                    if (j - 1 >= 0 && buttons[i][j - 1].getText().equals("X")) {
+                    if (j - 1 >= 0 && of.getButtons()[i][j - 1].getText().equals("X")) {
                         oIncrement++;
-                        buttons[i][j - 1].setText("O");
+                        of.getButtons()[i][j - 1].setText("O");
                         left = true;
                     }
 
@@ -55,24 +54,24 @@ public class Bot {
                             Integer.MIN_VALUE,
                             Integer.MAX_VALUE,
                             false,
-                            xScore - oIncrement,
-                            oScore + 1 + oIncrement,
-                            buttons,
-                            isBotFirst,
+                            of.getPlayerXScore() - oIncrement,
+                            of.getPlayerOScore() + 1 + oIncrement,
+                            of.getButtons(),
+                            of.isBotFirst(),
                             oIncrement
                     );
-                    buttons[i][j].setText("");
+                    of.getButtons()[i][j].setText("");
                     if (up) {
-                        buttons[i - 1][j].setText("X");
+                        of.getButtons()[i - 1][j].setText("X");
                     }
                     if (right) {
-                        buttons[i][j + 1].setText("X");
+                        of.getButtons()[i][j + 1].setText("X");
                     }
                     if (down) {
-                        buttons[i + 1][j].setText("X");
+                        of.getButtons()[i + 1][j].setText("X");
                     }
                     if (left) {
-                        buttons[i][j - 1].setText("X");
+                        of.getButtons()[i][j - 1].setText("X");
                     }
                     if (score > bestScore) {
                         bestScore = score;
@@ -239,98 +238,4 @@ public class Bot {
         return bestScore;
     }
 
-    public int[] makeBestHillClimbMove(Button[][] buttons) {
-        PriorityQueue<int[]> p = new PriorityQueue<>(Comparator.comparing(arr -> arr[2]));
-        int tempPrio;
-        for (int i = 0; i < buttons.length; i++) {
-            for (int j = 0; j < buttons[i].length; j++) {
-                if (buttons[i][j].getText().equals("")) {
-                    tempPrio = 1;
-                    if (i - 1 >= 0 && buttons[i - 1][j].getText().equals("X")) {
-                        tempPrio++;
-                    }
-                    if (j - 1 >= 0 && buttons[i][j - 1].getText().equals("X")) {
-                        tempPrio++;
-                    }
-                    if (i + 1 < 8 && buttons[i + 1][j].getText().equals("X")) {
-                        tempPrio++;
-                    }
-                    if (j + 1 < 8 && buttons[i][j + 1].getText().equals("X")) {
-                        tempPrio++;
-                    }
-                    p.offer(new int[]{i, j, tempPrio});
-                }
-            }
-        }
-        int[] lastElement = null;
-        while (!p.isEmpty()) {
-            lastElement = p.poll();
-        }
-        assert lastElement != null;
-        return new int[]{lastElement[0], lastElement[1]};
-    }
-
-    public int[] hillClimb(Button[][] buttons, int roundsLeft, boolean isBotFirst) {
-        // Get initial value
-        List<int[]> currentNode = UtilityFunction.getInitialValue(buttons, roundsLeft, isBotFirst);
-
-        // Loop until value decreases
-        while (true) {
-            // Generate neighbor
-            List<int[]> neighbor = UtilityFunction.getHighestValueNeighbor(buttons, currentNode);
-            if (UtilityFunction.checkScore(buttons, neighbor) <= UtilityFunction.checkScore(buttons, currentNode)) {
-                return currentNode.get(0);
-            }
-            currentNode = new ArrayList<>(neighbor);
-        }
-    }
-
-    /**
-     * Performs the Random Restart Hill Climbing algorithm to find the best move in the Adjacency Strategy Game.
-     * Random Restart Hill Climbing is used to iteratively search for the best move by restarting the search multiple times
-     * with a random initial state and selecting the best solution among all restarts.
-     *
-     * @param buttons      The current state of the game board represented as a 2D array of Buttons.
-     * @param roundsLeft   The number of rounds left in the game.
-     * @param isBotFirst   Indicates whether the bot is the first player.
-     * @return An array of length 2 representing the row and column indices of the best move for the bot.
-     */
-    public int[] randomRestart(Button[][] buttons, int roundsLeft, boolean isBotFirst) {
-        // Define the maximum amount of iterations
-        int maxIterations = 75;
-
-        // Define the best solution and its fitness
-        List<int[]> bestNode = new ArrayList<>();
-        int bestValue = Integer.MIN_VALUE;
-
-        for (int i = 0; i < maxIterations; i++) {
-            // Get initial value
-            List<int[]> currentNode = UtilityFunction.getInitialValue(buttons, roundsLeft, isBotFirst);
-            int currentBest = UtilityFunction.checkScore(buttons, currentNode);
-
-            // Loop until value decreases
-            while (true) {
-                // Generate neighbor
-                List<int[]> neighbor = UtilityFunction.getHighestValueNeighbor(buttons, currentNode);
-                int neighborScore = UtilityFunction.checkScore(buttons, neighbor);
-                if (neighborScore <= currentBest) {
-                    break;
-                }
-                currentNode = new ArrayList<>(neighbor);
-                currentBest = neighborScore;
-            }
-
-            // Update value of bestValue
-            if (currentBest > bestValue) {
-                bestNode = new ArrayList<>(currentNode);
-                bestValue = currentBest;
-            }
-        }
-
-        // Return the beginning node
-        return bestNode.get(0);
-    }
-
 }
-
-
