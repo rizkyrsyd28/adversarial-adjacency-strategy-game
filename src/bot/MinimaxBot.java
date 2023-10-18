@@ -97,8 +97,7 @@ public class MinimaxBot extends Bot {
                             of.getPlayerXScore() - oIncrement,
                             of.getPlayerOScore() + 1 + oIncrement,
                             of.getButtons(),
-                            of.isBotFirst(),
-                            oIncrement
+                            of.isBotFirst()
                     );
                     of.getButtons()[i][j].setText("");
                     if (up) {
@@ -137,9 +136,13 @@ public class MinimaxBot extends Bot {
      * @return The best score for the current game state.
      */
     public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int xScore, int oScore,
-                       Button[][] buttons, boolean isBotFirst, int eat) {
+                       Button[][] buttons, boolean isBotFirst) {
         if (currentRound == 0) {
-            return (oScore - xScore) + (eat);
+            if (this.playerString.equals("O")) {
+                return (oScore - xScore);
+            } else {
+                return (xScore - oScore);
+            }
         }
 
         int bestScore, nextRound;
@@ -184,8 +187,7 @@ public class MinimaxBot extends Bot {
                                 xScore - oIncrement,
                                 oScore + 1 + oIncrement,
                                 buttons,
-                                isBotFirst,
-                                oIncrement
+                                isBotFirst
                         );
 
                         buttons[i][j].setText("");
@@ -249,8 +251,7 @@ public class MinimaxBot extends Bot {
                                 xScore + 1 + xIncrement,
                                 oScore - xIncrement,
                                 buttons,
-                                isBotFirst,
-                                xIncrement
+                                isBotFirst
                         );
                         if (up) {
                             buttons[i - 1][j].setText(this.opponentString);
