@@ -1,3 +1,5 @@
+package structs;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +15,7 @@ public class Test {
         child1.addChild(new GeneticTree(new GeneticNode(5, 'E', "salmon")));
         child1.addChild(new GeneticTree(new GeneticNode(6, 'F', "avocado")));
         child2.addChild(new GeneticTree(new GeneticNode(7, 'G', "banana")));
-        child2.addChild(new GeneticTree(new GeneticNode(8, 'H', "xilem")));
+        child2.addChild(new GeneticTree(new GeneticNode(8, 'H', "xylem")));
         child2.addChild(new GeneticTree(new GeneticNode(9, 'I', "phloem")));
         child3.addChild(new GeneticTree(new GeneticNode(10, 'J', "jakarta")));
         child3.addChild(new GeneticTree(new GeneticNode(11, 'K', "baghdad")));

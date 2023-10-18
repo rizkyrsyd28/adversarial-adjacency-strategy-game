@@ -1,3 +1,5 @@
+package structs;
+
 public class GeneticNode {
     private int FitnessValue;
     private char Gene;
