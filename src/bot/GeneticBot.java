@@ -33,7 +33,7 @@ public class GeneticBot extends Bot {
         while (true) {
            
             // do population selection
-            population = Population.PopulationSelection(population, population_child);
+            population = Population.PopulationSelection(population, population_child, playerString.equals("O"));
             
             
             if(iteration >= MIN_ITERATION){
