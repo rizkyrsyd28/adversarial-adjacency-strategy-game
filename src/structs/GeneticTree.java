@@ -1,5 +1,6 @@
 package structs;
 
+
 public class GeneticTree extends NAryTree<GeneticNode> {
     public static char ROOT_VAL = '@';
     public static int MaxDepth = 5;
@@ -27,6 +28,7 @@ public class GeneticTree extends NAryTree<GeneticNode> {
     /**
      * Default Root Constructor
      * @param n: number of children of the root
+     * @return: a tree with the given node and number of children
      */
     public GeneticTree(int n) {
         super(new GeneticNode(Integer.MIN_VALUE, ROOT_VAL, null), n);
@@ -34,7 +36,7 @@ public class GeneticTree extends NAryTree<GeneticNode> {
 
     /**
      * Add a child to the tree
-     * @param child The child to add to the current tree
+     * @param child
      */
     public void addChild(GeneticTree child) {
         super.addChild(child);
@@ -47,24 +49,22 @@ public class GeneticTree extends NAryTree<GeneticNode> {
      */
     public void debugTree(int th) { // print tree pre-order
 
-        System.out.print("  ".repeat(MaxDepth - th));
+        System.out.print(" ".repeat(th));
         System.out.println("|- " + this.data.debugNode());
 
         if(this.children.isEmpty()) return; //base case
 
         for (NAryTree<GeneticNode> child : this.children) {
-            ((GeneticTree) child).debugTree(th - 1);
+            ((GeneticTree) child).debugTree(th+1);
         }
     }
 
-    public void miniMax(boolean isMaximizingPlayer) {
-        System.out.println("MiniMax called on " + this.data.debugNode());
-        int bestScore;
-        String bestChromosomeID = null;
-        if (isMaximizingPlayer){
+    public void miniMax(boolean isMaximizingPlayer) { 
+    if(isMaximizingPlayer){
         //Maximizing case
-            bestScore = Integer.MIN_VALUE;
-            for (NAryTree<GeneticNode> child : this.children) {
+        int bestScore = Integer.MIN_VALUE;
+        String bestChromosomeID = null;
+        for (NAryTree<GeneticNode> child : this.children) {
            // recursive case
            if(!child.children.isEmpty()){
                ((GeneticTree) child).miniMax(false);
@@ -76,11 +76,14 @@ public class GeneticTree extends NAryTree<GeneticNode> {
             }
            
         }
-        }
+        this.data.setFitnessValue(bestScore);
+        this.data.setChromosomeID(bestChromosomeID);
+    }
     else {
         //Minimizing case
-            bestScore = Integer.MAX_VALUE;
-            for (NAryTree<GeneticNode> child : this.children) {
+        int bestScore = Integer.MAX_VALUE;
+        String bestChromosomeID = null;
+        for (NAryTree<GeneticNode> child : this.children) {
            // recursive case
            if(!child.children.isEmpty()){
                ((GeneticTree) child).miniMax(true);
@@ -92,9 +95,9 @@ public class GeneticTree extends NAryTree<GeneticNode> {
             }
            
         }
-        }
         this.data.setFitnessValue(bestScore);
         this.data.setChromosomeID(bestChromosomeID);
+     }
     }
     
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import utils.GeneticFunction;
+
 public class Test {
     
     public static void main(String[] args) {
@@ -15,7 +17,7 @@ public class Test {
         child1.addChild(new GeneticTree(new GeneticNode(5, 'E', "salmon")));
         child1.addChild(new GeneticTree(new GeneticNode(6, 'F', "avocado")));
         child2.addChild(new GeneticTree(new GeneticNode(7, 'G', "banana")));
-        child2.addChild(new GeneticTree(new GeneticNode(8, 'H', "xylem")));
+        child2.addChild(new GeneticTree(new GeneticNode(8, 'H', "xilem")));
         child2.addChild(new GeneticTree(new GeneticNode(9, 'I', "phloem")));
         child3.addChild(new GeneticTree(new GeneticNode(10, 'J', "jakarta")));
         child3.addChild(new GeneticTree(new GeneticNode(11, 'K', "baghdad")));
@@ -30,9 +32,10 @@ public class Test {
 
         Chromosome chrom = new Chromosome(new ArrayList<>(List.of(1, 1, 4, 4, 5, 8, 8, 8, 9, 10)), "chrom");
         Chromosome chrom2 = new Chromosome(new ArrayList<>(List.of(1, 3, 4, 4, 8, 8, 8, 8, 9, 11)), "chrom2");
-        Chromosome.restrictCrossover(chrom, chrom2, 4);
+        Chromosome.restrictCrossover(chrom, chrom2, 4,Chromosome.geneSetDefault);
         chrom.debugChromosome();
         chrom2.debugChromosome();
+        GeneticFunction.foo();
 
     }
 }

@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Random;
+import javafx.scene.control.Button;
+import utils.*;
 
 public class Chromosome {
     public static int MaxLength = 56;
-    public static Set<Integer> geneSet = new HashSet<>();
+    public static Set<Integer> geneSetDefault = new HashSet<>();
 
     private List<Integer> genes;
     private int fitnessValue;
@@ -17,22 +19,42 @@ public class Chromosome {
 
     static {
         for (int i = 0; i <= 63; i++) {
-            geneSet.add(i);
+            geneSetDefault.add(i);
         }
     }
 
     /**
+     * Main Constructor
+     * Create a chromosome with spesific genes, fitness value, and ID. 
+     * Chromosome is restricted to geneSet.
+     * @param length
+     * @param chromosomeID
+     * @param buttons
+     * @param geneSet : restricted gene set
+     */
+    public Chromosome(int length, String chromosomeID, Button[][] buttons,  Set<Integer> geneSet) {
+        this.chromosomeID = chromosomeID;
+        this.genes = this.createGenes(geneSet, length);
+        this.resolveDuplicateGenes(geneSet);
+        this.fitnessValue = UtilityFunction.checkScore(buttons, this.decodeGeneOrder());
+    }
+
+    /**
      * Constructor
+     * Create a chromosome with spesific genes, fitness value, and ID. Chromosome is restricted to geneSet.
      * @param genes
      * @param fitnessValue
      * @param chromosomeID
+     * @param geneSet : restricted gene set
      */
-    public Chromosome(List<Integer> genes, int fitnessValue, String chromosomeID) {
+    public Chromosome(List<Integer> genes, int fitnessValue, String chromosomeID, Set<Integer> geneSet) {
         this.genes = genes;
         this.fitnessValue = fitnessValue;
         this.chromosomeID = chromosomeID;
+        this.resolveDuplicateGenes(geneSet);
     }
 
+    
     /**
      * Constructor
      * @param genes
@@ -46,7 +68,8 @@ public class Chromosome {
 
     /**
      * Constructor
-     * Generate a random chromosome with spesific length
+     * Generate a random chromosome and fitness value with spesific length and ID. geneSet is default
+     * Used for test 2
      * @param length
      * @param chromosomeID
      */
@@ -57,9 +80,9 @@ public class Chromosome {
             this.genes.add(random.nextInt(64));
         }
         this.chromosomeID = chromosomeID;
-        this.fitnessValue = 0;
-        this.resolveDuplicateGenes();
-
+        Random random = new Random();
+        this.fitnessValue = random.nextInt(100);
+        this.resolveDuplicateGenes(geneSetDefault);
 
     }
 
@@ -90,18 +113,39 @@ public class Chromosome {
         return chromosomeID;
     }
 
-
+    // OTHER METHOD
+    /**
+     * Method for default constructor
+     * @param geneSet
+     * @param length
+     * @return a list of random genes with spesific length
+     */
+    private List<Integer> createGenes(Set<Integer> geneSet, int length){
+        List<Integer> result = new ArrayList<>();
+        List<Integer> geneSetList = new ArrayList<>(geneSet);
+        int feasible_length = Math.min(length, geneSet.size());
+        Collections.shuffle(geneSetList);
+        for(int i = 0; i < feasible_length; i++){
+            result.add(geneSetList.get(i));
+        }
+        return result;
+    }
     /**
      * 
      * @param gene
      * @return the gene at the given index
      */
-    public static String decodeGene(int gene){
+    public static String decodeGeneStr(int gene){
         int row = gene / 8;
         int col = gene % 8;
         return "[" + row + "," + col + "]";
     }
 
+    public static int[] decodeGene(int gene){
+        int row = gene / 8;
+        int col = gene % 8;
+        return new int[]{row, col};
+    }
     /**
      * 
      * @param row
@@ -112,15 +156,56 @@ public class Chromosome {
         return row * 8 + col;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public List<int[]> decodeGeneOrder(){
+        List<int[]> result = new ArrayList<>();
+        for(int i = 0; i < this.genes.size(); i++){
+            int row = this.genes.get(i) / 8;
+            int col = this.genes.get(i) % 8;
+            result.add(new int[]{row, col});
+        }
+        return result;
+    }
+
+    /**
+     * 
+     * @param geneOrder
+     */
+    public void encodeGeneOrder(List<int[]> geneOrder){
+        List<Integer> newGenes = new ArrayList<>();
+        for(int i = 0; i < geneOrder.size(); i++){
+            int row = geneOrder.get(i)[0];
+            int col = geneOrder.get(i)[1];
+            newGenes.add(encodeGene(row, col));
+        }
+        this.genes = newGenes;
+
+    }
+
+    /**
+     * 
+     * @param chromosome
+     * @return the decoded chromosome
+     */
+
     public void debugChromosome(){
         System.out.println("Chromosome ID: " + this.chromosomeID);
         System.out.println("Fitness Value: " + this.fitnessValue);
         System.out.println("Genes: ");
         for(int i = 0; i < this.genes.size(); i++){
             String after = (i == this.genes.size()-1 ? "\n" : "-");
-            System.out.print(decodeGene(this.genes.get(i)) + after);
+            System.out.print(decodeGeneStr(this.genes.get(i)) + after);
         }
     }
+
+    /**
+     * 
+     * @param genes
+     * @return is Chromosome have duplicate genes
+     */
 
     public static boolean isChromosomeValid(List<Integer> genes){
         Set<Integer> set = new HashSet<>();
@@ -136,9 +221,10 @@ public class Chromosome {
      * @param chromosome1
      * @param chromosome2
      * @param crossoverPoint
+     * @param geneSet : restricted gene set
      * crossover the chromosome at the given index
      */
-    public static void restrictCrossover(Chromosome chromosome1, Chromosome chromosome2, int crossoverPoint){
+    public static void restrictCrossover(Chromosome chromosome1, Chromosome chromosome2, int crossoverPoint, Set<Integer> geneSet){
         List<Integer> newGenes = new ArrayList<>();
         List <Integer> newGenes2 = new ArrayList<>();
         for(int i = 0; i < chromosome1.getGenes().size(); i++){
@@ -153,8 +239,8 @@ public class Chromosome {
         chromosome1.setGenes(newGenes);
         chromosome2.setGenes(newGenes2);
         //mutate
-        chromosome1.resolveDuplicateGenes();
-        chromosome2.resolveDuplicateGenes();
+        chromosome1.resolveDuplicateGenes(geneSet);
+        chromosome2.resolveDuplicateGenes(geneSet);
     }
 
 
@@ -163,7 +249,7 @@ public class Chromosome {
      * @param mutationPoint
      * mutate the gene at the given index with restricted mutation
      */
-    public void restrictMutation(int mutationPoint){
+    public void restrictMutation(int mutationPoint, Set<Integer> geneSet){
 
         //Get chromosome hashset
         Set<Integer> set = new HashSet<>();
@@ -172,7 +258,7 @@ public class Chromosome {
         }
 
         //duplicating geneSet
-        Set<Integer> permissionGene = new HashSet<>(geneSet);
+        Set<Integer> permissionGene = new HashSet<>(geneSet == null? geneSetDefault : geneSet);
 
         //remove gen that already exist in chromosome
         permissionGene.removeAll(set);
@@ -187,8 +273,10 @@ public class Chromosome {
     }
     /**
      * resolve duplicate genes in chromosome
+     * @param geneSet : set of genes that can be used in chromosome
+     * 
      */
-    public void resolveDuplicateGenes(){
+    public void resolveDuplicateGenes(Set<Integer> geneSet){
 
         if(isChromosomeValid(this.genes)) return;
 
@@ -196,12 +284,16 @@ public class Chromosome {
         for(int i = 0; i < this.genes.size(); i++){
             if(Collections.frequency(this.genes, this.genes.get(i)) > 1){
                 int duplicateGene = this.genes.get(i);
-                restrictMutation(i);
+                restrictMutation(i, geneSet);
                 while(this.genes.get(i) == duplicateGene){
-                    restrictMutation(i);
+                    restrictMutation(i, geneSet);
                 }
             }
         }
+    }
+
+    public void recalculateFitnessValue(Button[][] buttons){
+        this.fitnessValue = UtilityFunction.checkScore(buttons, this.decodeGeneOrder());
     }
     
 }
