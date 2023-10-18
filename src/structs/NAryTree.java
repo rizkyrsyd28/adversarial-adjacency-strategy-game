@@ -34,6 +34,24 @@ public class NAryTree<T>{
         this.children = new ArrayList<>(0);
     }
 
+    // SETTERS
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public void setChildren(List<NAryTree<T>> children) {
+        this.children = children;
+    }
+
+    // GETTERS
+    public T getData() {
+        return data;
+    }
+
+    public List<NAryTree<T>> getChildren() {
+        return children;
+    }
+
     /**
      * add a child to the tree
      * @param child: child to add

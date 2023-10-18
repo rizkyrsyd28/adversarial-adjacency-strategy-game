@@ -2,7 +2,7 @@ package structs;
 
 public class GeneticNode {
     private int FitnessValue;
-    private char Gene;
+    private int Gene;
     private String ChromosomeID;
 
 
@@ -12,7 +12,7 @@ public class GeneticNode {
      * @param gene
      * @param chromosomeID
      */
-    public GeneticNode(int FitnessValue,char gene, String chromosomeID) {
+    public GeneticNode(int FitnessValue,int gene, String chromosomeID) {
         this.FitnessValue = FitnessValue;
         this.Gene = gene;
         this.ChromosomeID = chromosomeID;
@@ -23,7 +23,7 @@ public class GeneticNode {
         FitnessValue = fitnessValue;
     }
 
-    public void setGene(char gene) {
+    public void setGene(int gene) {
         Gene = gene;
     }
 
@@ -36,7 +36,7 @@ public class GeneticNode {
         return FitnessValue;
     }
 
-    public char getGene() {
+    public int getGene() {
         return Gene;
     }
 
