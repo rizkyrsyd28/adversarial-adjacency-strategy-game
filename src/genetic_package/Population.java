@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.control.Button;
 
+import utils.*;
+
 
 public class Population {
     public static int defaultPopulationSize = 10;
@@ -203,7 +205,7 @@ public class Population {
      * @return
      */
 
-    public static Population PopulationSelection(Population population1, Population population2){
+    public static Population PopulationSelection(Population population1, Population population2, boolean isO){
         //Parameters:
         List<int[]> order = new ArrayList<int[]>();
         List<Chromosome> selectedChromosomes = new ArrayList<>();
@@ -211,11 +213,24 @@ public class Population {
         Set<Integer> geneSetIntersection = new HashSet<Integer>(population1.getGeneSet());
         geneSetIntersection.retainAll(population2.getGeneSet());
 
+        //create tree
+        Population pop_temp = new Population(population1);
+        for(Chromosome chromosome : population2.getChromosomes()){
+            pop_temp.getChromosomes().add(new Chromosome(chromosome));
+        }
+        pop_temp.setGeneSet(geneSetIntersection);
+        GeneticTree tree = GeneticFunction.constructMiniMaxTree(pop_temp, isO);
+        tree.miniMax(true);
+
         //Algorithm:
         // add the fitness value of each chromosome to order
         for(int i = 0; i < orderSize; i++){
-            order.add(new int[]{population1.getChromosomes().get(i).getFitnessValue(), i,0});
-            order.add(new int[]{population2.getChromosomes().get(i).getFitnessValue(), i,1});
+            String chromosome1ID = population1.getChromosomes().get(i).getChromosomeID();
+            String chromosome2ID = population2.getChromosomes().get(i).getChromosomeID();
+            int fitnessValue1 = population1.getTreeFitnessValue(chromosome1ID,tree,population1.getChromosomeLength());
+            int fitnessValue2 = population2.getTreeFitnessValue(chromosome2ID,tree,population2.getChromosomeLength());
+            order.add(new int[]{fitnessValue1, i,0});
+            order.add(new int[]{fitnessValue2, i,1});
         }
 
         //do the quicksort for order:
@@ -232,6 +247,7 @@ public class Population {
 
     }
 
+    //sort descending
     private static void quickSortFitness(List<int[]> order, int lo, int hi){
         if (lo < hi) {
             int pivot = partition(order, lo, hi);
@@ -246,7 +262,7 @@ public class Population {
         int i = lo;
 
         for (int j = lo; j < hi; j++) {
-            if (order.get(j)[0] < pivot[0]) {
+            if (order.get(j)[0] > pivot[0]) {
                 Collections.swap(order, i, j);
                 i++;
             }
@@ -269,5 +285,18 @@ public class Population {
             }
         }
         return null;
+    }
+
+    public int getTreeFitnessValue(String ChromosomeID, GeneticTree tree, int height){
+        if(tree.getData().getChromosomeID().equals(ChromosomeID)){
+            return height;
+        }
+        else{
+            int fitnessValue = Integer.MIN_VALUE;
+            for(NAryTree<GeneticNode> child : tree.getChildren()){
+                fitnessValue = Math.max(getTreeFitnessValue(ChromosomeID, (GeneticTree) child, height - 1), fitnessValue);
+            }
+            return fitnessValue;
+        }
     }
 }
