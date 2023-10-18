@@ -1,4 +1,4 @@
-package structs;
+package genetic_package;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,15 +1,23 @@
 package bot; 
 
 import controllers.OutputFrameController;
-import structs.Chromosome;
-import structs.GeneticTree;
-import structs.Population;
+import genetic_package.*;
 import utils.GeneticFunction;
 
 public class GeneticBot extends Bot {
     public static final int MIN_ITERATION = 5;
     public static final int MAX_ITERATION = 100;
     public static final int POPULATION_SIZE = 100;
+
+    public GeneticBot(String playerString) {
+        this.playerString = playerString;
+        if (this.playerString.equals("O")) {
+            this.opponentString = "X";
+        } else {
+            this.opponentString = "O";
+        }
+    }
+
 
     @Override
     public int[] move(OutputFrameController outputFrameController) {
@@ -29,7 +37,7 @@ public class GeneticBot extends Bot {
             
             if(iteration >= MIN_ITERATION){
                 // construct minimax tree
-                tree = GeneticFunction.constructMiniMaxTree(population);
+                tree = GeneticFunction.constructMiniMaxTree(population, playerString.equals("O"));
                 tree.miniMax(true);
                 if( tree.getData().getFitnessValue() > 0){
                     int[] move =  Chromosome.decodeGene(tree.getData().getGene());

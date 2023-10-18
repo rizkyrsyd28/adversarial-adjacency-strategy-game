@@ -1,10 +1,13 @@
-package structs;
+package genetic_package.unit_test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import utils.GeneticFunction;
+import genetic_package.Chromosome;
+import genetic_package.GeneticNode;
+import genetic_package.GeneticTree;
 
 public class Test {
     

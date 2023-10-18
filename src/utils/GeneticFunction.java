@@ -1,11 +1,12 @@
 package utils;
 
 import javafx.scene.control.Button;
-import structs.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import genetic_package.*;
 
 
 public class GeneticFunction {
@@ -14,17 +15,17 @@ public class GeneticFunction {
         System.out.println("foo");
     }
 
-    public static GeneticTree constructMiniMaxTree(Population population){
+    public static GeneticTree constructMiniMaxTree(Population population, boolean isO){
         Population pop = new Population(population);
         GeneticTree root = new GeneticTree(pop.getPopulationSize());
         List<Chromosome> chromosomes = new ArrayList<>(pop.getChromosomes()); // copy the chromosomes
         for(Chromosome chromosome : chromosomes){
-            constructMiniMaxSubTree(chromosome, root);
+            constructMiniMaxSubTree(chromosome, root, isO);
         }
         return root;
     }
 
-    public static void constructMiniMaxSubTree(Chromosome chromosome, GeneticTree parent){
+    public static void constructMiniMaxSubTree(Chromosome chromosome, GeneticTree parent, boolean isO){
 
         //variable instantiation
         int fitnessValue = chromosome.getFitnessValue();
@@ -33,7 +34,7 @@ public class GeneticFunction {
 
         //base case
         if(chromosome.getGenes().size() == 1){ 
-            GeneticNode child = new GeneticNode(fitnessValue, gene, chromosomeID);
+            GeneticNode child = new GeneticNode(isO ? fitnessValue : -fitnessValue, gene, chromosomeID);
             parent.addChild(new GeneticTree(child));
             return;
         }
@@ -44,7 +45,7 @@ public class GeneticFunction {
         for(NAryTree<GeneticNode> child : parent.getChildren()){
             if(child.getData().getGene() == gene){
                 chromosome.getGenes().remove(0);
-                constructMiniMaxSubTree(chromosome, (GeneticTree) child);
+                constructMiniMaxSubTree(chromosome, (GeneticTree) child, isO);
                 return;
             }
         }
@@ -55,7 +56,7 @@ public class GeneticFunction {
         GeneticTree newChild = new GeneticTree(child);
         parent.addChild(newChild);
         chromosome.getGenes().remove(0);
-        constructMiniMaxSubTree(chromosome, newChild);
+        constructMiniMaxSubTree(chromosome, newChild, isO);
         return;
 
     }
