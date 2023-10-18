@@ -102,7 +102,7 @@ public class InputFrameController{
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotVsBot.isSelected(), this.algo1.getValue(), this.algo2.getValue(), this.isBotVsBot.isSelected());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected(), this.algo1.getValue(), this.algo2.getValue(), this.isBotVsBot.isSelected());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
@@ -111,10 +111,12 @@ public class InputFrameController{
             secondaryStage.setResizable(true);
             secondaryStage.show();
 
-            BotAnimated animated = new BotAnimated(outputFC);
-            Thread thread = new Thread(animated);
-            thread.setDaemon(true);
-            thread.start();
+            if (this.isBotVsBot.isSelected()) {
+                BotAnimated animated = new BotAnimated(outputFC);
+                Thread thread = new Thread(animated);
+                thread.setDaemon(true);
+                thread.start();
+            }
         }
     }
 
