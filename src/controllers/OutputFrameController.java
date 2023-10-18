@@ -57,8 +57,12 @@ public class OutputFrameController {
     private int playerOScore;
     private int roundsLeft;
     private boolean isBotFirst;
-    private Bot bot1;
-    private Bot bot2;
+    private boolean isBotVsBot; 
+    private boolean exitGame = false; 
+    private Bot botX;
+    private Bot botO;
+    private String botXAlgo;
+    private String botOAlgo;
 
     private static final int ROW = 8;
     private static final int COL = 8;
@@ -76,19 +80,53 @@ public class OutputFrameController {
      * @param isBotFirst True if bot is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String algo1, String algo2, boolean isVSBot){
+    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String algo1, String algo2, boolean isBotVsBot){
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
         this.isBotFirst = isBotFirst;
+        this.isBotVsBot = isBotVsBot;
+        this.botXAlgo = algo1;
+        this.botOAlgo = algo2;
 
         // Start bot
-        this.bot1 = new MinimaxBot();
-        this.playerXTurn = !isBotFirst;
-        if (this.isBotFirst) {
-            this.moveBot();
+        switch (this.botOAlgo) {
+            case "Local Search (HC)":
+                this.botO = new LocalSearchBot();
+                break;
+            case "Min Max":
+                this.botO = new MinimaxBot();
+                break;
+            case "Genetic Algorithm":
+                this.botO = new GeneticBot();
+                break;
+            default:
+                break;
         }
+
+        if (this.isBotVsBot) {
+            switch (this.botXAlgo) {
+                case "Local Search (HC)":
+                    this.botX = new LocalSearchBot();
+                    break;
+                case "Min Max":
+                    this.botX = new MinimaxBot();
+                    break;
+                case "Genetic Algorithm":
+                    this.botX = new GeneticBot();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else {
+            if (this.isBotFirst) {
+                this.moveBot();
+            }
+        }
+        // this.botO = new MinimaxBot();
+        // this.playerXTurn = !isBotFirst;
     }
 
 
@@ -176,7 +214,7 @@ public class OutputFrameController {
      * @param j The column number of the button clicked.
      *
      */
-    private void selectedCoordinates(int i, int j){
+    public void selectedCoordinates(int i, int j){
         // Invalid when a button with an X or an O is clicked.
         if (!this.buttons[i][j].getText().equals(""))
             new Alert(Alert.AlertType.ERROR, "Invalid coordinates: Try again!").showAndWait();
@@ -349,13 +387,51 @@ public class OutputFrameController {
         secondaryStage.close();
 
         // Reopen primary stage/input frame.
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("InputFrame.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/InputFrame.fxml"));
         Parent root = loader.load();
         Stage primaryStage = new Stage();
         primaryStage.setTitle("Adjacency Gameplay");
         primaryStage.setScene(new Scene(root));
         primaryStage.setResizable(false);
         primaryStage.show();
+    }
+
+    public void playBotVsBot() {
+        while (this.roundsLeft != 0) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            
+            int[] botMove = this.botO.move(this);
+            int i = botMove[0];
+            int j = botMove[1]; 
+            
+            if (!this.buttons[i][j].getText().equals("")) {
+                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+                System.exit(1);
+                return;
+            }
+            
+            this.selectedCoordinates(i, j);
+        }
+    }
+
+    public void moveBotX() {
+        
+        int[] botMove = this.botO.move(this);
+        int i = botMove[0];
+        int j = botMove[1]; 
+        
+        if (!this.buttons[i][j].getText().equals("")) {
+            new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+            System.exit(1);
+            return;
+        }
+        
+        this.selectedCoordinates(i, j);
+
     }
 
     private void moveBot() {
@@ -367,7 +443,8 @@ public class OutputFrameController {
 //        int[] botMove = this.bot.makeBestHillClimbMove(this.buttons);
 //        int[] botMove = this.bot.randomRestart(this.buttons, this.roundsLeft, this.isBotFirst);
 //        int[] botMove = this.bot.hillClimb(this.buttons, this.roundsLeft, this.isBotFirst);
-        int[] botMove = this.bot1.move(this);
+
+        int[] botMove = this.botO.move(this);
         int i = botMove[0];
         int j = botMove[1];
 
@@ -398,5 +475,10 @@ public class OutputFrameController {
 
     public Button[][] getButtons() {
         return buttons;
+    }
+
+
+    public void setColor(OutputFrameController ofc, int i, int j) {
+        ofc.getButtons()[i][j].setText("J");
     }
 }

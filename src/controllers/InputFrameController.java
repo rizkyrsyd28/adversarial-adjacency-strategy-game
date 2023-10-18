@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.stage.Stage;
-
+import utils.BotAnimated;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -60,6 +60,11 @@ public class InputFrameController{
         this.algo1.setItems(algoDropdown);
         this.algo2.setItems(algoDropdown);
         this.numberOfRounds.getSelectionModel().select(0);
+        this.algo1.setDisable(true);
+
+        this.isBotVsBot.setOnAction(event -> {
+            this.algo1.setDisable(!this.isBotVsBot.isSelected());
+        });
     }
 
 
@@ -92,12 +97,12 @@ public class InputFrameController{
             Stage primaryStage = (Stage) this.player1.getScene().getWindow();
             primaryStage.close();
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("OutputFrame.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/OutputFrame.fxml"));
             Parent root = loader.load();
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected(), this.algo1.getValue(), this.algo2.getValue(), this.isBotVsBot.isSelected());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotVsBot.isSelected(), this.algo1.getValue(), this.algo2.getValue(), this.isBotVsBot.isSelected());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
@@ -105,6 +110,11 @@ public class InputFrameController{
             secondaryStage.setScene(new Scene(root));
             secondaryStage.setResizable(true);
             secondaryStage.show();
+
+            BotAnimated animated = new BotAnimated(outputFC);
+            Thread thread = new Thread(animated);
+            thread.setDaemon(true);
+            thread.start();
         }
     }
 
