@@ -1,5 +1,6 @@
 javafx-sdk{*/}
-
+javafx-sdk-21
+javafx-sdk-17.0.8
 # Compiled class file
 *.class
 
