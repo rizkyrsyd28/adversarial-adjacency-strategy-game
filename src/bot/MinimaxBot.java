@@ -4,7 +4,20 @@ import controllers.OutputFrameController;
 import javafx.scene.control.Button;
 import utils.UtilityFunction;
 
+import javax.swing.*;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
 public class MinimaxBot extends Bot {
+
+    public MinimaxBot(String playerString) {
+        this.playerString = playerString;
+        if (this.playerString.equals("O")) {
+            this.opponentString = "X";
+        } else {
+            this.opponentString = "O";
+        }
+    }
 
     @Override
     public int[] move(OutputFrameController of) {
@@ -22,30 +35,57 @@ public class MinimaxBot extends Bot {
         }
         int[] bestMove = new int[2];
 
+
+        int bestGreedy = Integer.MIN_VALUE;
         for (int i = 0; i < of.getButtons().length; i++) {
             for (int j = 0; j < of.getButtons()[i].length; j++) {
-                if (UtilityFunction.isWorthy(of.getButtons(), i, j, "X")) {
+                if (of.getButtons()[i][j].getText().equals("")) {
+                    int pQueue = 1;
+                    if (i - 1 >= 0 && of.getButtons()[i - 1][j].getText().equals(this.opponentString)) {
+                        pQueue++;
+                    }
+                    if (j - 1 >= 0 && of.getButtons()[i][j - 1].getText().equals(this.opponentString)) {
+                        pQueue++;
+                    }
+                    if (i + 1 < 8 && of.getButtons()[i + 1][j].getText().equals(this.opponentString)) {
+                        pQueue++;
+                    }
+                    if (j + 1 < 8 && of.getButtons()[i][j + 1].getText().equals(this.opponentString)) {
+                        pQueue++;
+                    }
+                    if (pQueue >= bestGreedy) {
+                        bestGreedy = pQueue;
+                        bestMove[0] = i;
+                        bestMove[1] = j;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < of.getButtons().length; i++) {
+            for (int j = 0; j < of.getButtons()[i].length; j++) {
+                if (UtilityFunction.isWorthy(of.getButtons(), i, j, this.opponentString)) {
                     int oIncrement = 0;
-                    of.getButtons()[i][j].setText("O");
+                    of.getButtons()[i][j].setText(this.playerString);
                     boolean up = false, right = false, down = false, left = false;
-                    if (i - 1 >= 0 && of.getButtons()[i - 1][j].getText().equals("X")) {
+                    if (i - 1 >= 0 && of.getButtons()[i - 1][j].getText().equals(this.opponentString)) {
                         up = true;
-                        of.getButtons()[i - 1][j].setText("O");
+                        of.getButtons()[i - 1][j].setText(this.playerString);
                         oIncrement++;
                     }
-                    if (j + 1 < 8 && of.getButtons()[i][j + 1].getText().equals("X")) {
+                    if (j + 1 < 8 && of.getButtons()[i][j + 1].getText().equals(this.opponentString)) {
                         oIncrement++;
-                        of.getButtons()[i][j + 1].setText("O");
+                        of.getButtons()[i][j + 1].setText(this.playerString);
                         right = true;
                     }
-                    if (i + 1 < 8 && of.getButtons()[i + 1][j].getText().equals("X")) {
+                    if (i + 1 < 8 && of.getButtons()[i + 1][j].getText().equals(this.opponentString)) {
                         oIncrement++;
-                        of.getButtons()[i + 1][j].setText("O");
+                        of.getButtons()[i + 1][j].setText(this.playerString);
                         down = true;
                     }
-                    if (j - 1 >= 0 && of.getButtons()[i][j - 1].getText().equals("X")) {
+                    if (j - 1 >= 0 && of.getButtons()[i][j - 1].getText().equals(this.opponentString)) {
                         oIncrement++;
-                        of.getButtons()[i][j - 1].setText("O");
+                        of.getButtons()[i][j - 1].setText(this.playerString);
                         left = true;
                     }
 
@@ -62,16 +102,16 @@ public class MinimaxBot extends Bot {
                     );
                     of.getButtons()[i][j].setText("");
                     if (up) {
-                        of.getButtons()[i - 1][j].setText("X");
+                        of.getButtons()[i - 1][j].setText(this.opponentString);
                     }
                     if (right) {
-                        of.getButtons()[i][j + 1].setText("X");
+                        of.getButtons()[i][j + 1].setText(this.opponentString);
                     }
                     if (down) {
-                        of.getButtons()[i + 1][j].setText("X");
+                        of.getButtons()[i + 1][j].setText(this.opponentString);
                     }
                     if (left) {
-                        of.getButtons()[i][j - 1].setText("X");
+                        of.getButtons()[i][j - 1].setText(this.opponentString);
                     }
                     if (score > bestScore) {
                         bestScore = score;
@@ -96,8 +136,8 @@ public class MinimaxBot extends Bot {
      * @param isBotFirst    Indicates whether the bot is the first player.
      * @return The best score for the current game state.
      */
-    public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int xScore, int oScore, Button[][] buttons, boolean
-            isBotFirst, int eat) {
+    public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int xScore, int oScore,
+                       Button[][] buttons, boolean isBotFirst, int eat) {
         if (currentRound == 0) {
             return (oScore - xScore) + (eat);
         }
@@ -111,28 +151,28 @@ public class MinimaxBot extends Bot {
             }
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
-                    if (UtilityFunction.isWorthy(buttons, i, j, "X")) {
+                    if (UtilityFunction.isWorthy(buttons, i, j, this.opponentString)) {
                         int oIncrement = 0;
-                        buttons[i][j].setText("O");
+                        buttons[i][j].setText(this.playerString);
                         boolean up = false, right = false, down = false, left = false;
-                        if (i - 1 >= 0 && buttons[i - 1][j].getText().equals("X")) {
+                        if (i - 1 >= 0 && buttons[i - 1][j].getText().equals(this.opponentString)) {
                             up = true;
-                            buttons[i - 1][j].setText("O");
+                            buttons[i - 1][j].setText(this.playerString);
                             oIncrement++;
                         }
-                        if (j + 1 < 8 && buttons[i][j + 1].getText().equals("X")) {
+                        if (j + 1 < 8 && buttons[i][j + 1].getText().equals(this.opponentString)) {
                             oIncrement++;
-                            buttons[i][j + 1].setText("O");
+                            buttons[i][j + 1].setText(this.playerString);
                             right = true;
                         }
-                        if (i + 1 < 8 && buttons[i + 1][j].getText().equals("X")) {
+                        if (i + 1 < 8 && buttons[i + 1][j].getText().equals(this.opponentString)) {
                             oIncrement++;
-                            buttons[i + 1][j].setText("O");
+                            buttons[i + 1][j].setText(this.playerString);
                             down = true;
                         }
-                        if (j - 1 >= 0 && buttons[i][j - 1].getText().equals("X")) {
+                        if (j - 1 >= 0 && buttons[i][j - 1].getText().equals(this.opponentString)) {
                             oIncrement++;
-                            buttons[i][j - 1].setText("O");
+                            buttons[i][j - 1].setText(this.playerString);
                             left = true;
                         }
 
@@ -150,16 +190,16 @@ public class MinimaxBot extends Bot {
 
                         buttons[i][j].setText("");
                         if (up) {
-                            buttons[i - 1][j].setText("X");
+                            buttons[i - 1][j].setText(this.opponentString);
                         }
                         if (right) {
-                            buttons[i][j + 1].setText("X");
+                            buttons[i][j + 1].setText(this.opponentString);
                         }
                         if (down) {
-                            buttons[i + 1][j].setText("X");
+                            buttons[i + 1][j].setText(this.opponentString);
                         }
                         if (left) {
-                            buttons[i][j - 1].setText("X");
+                            buttons[i][j - 1].setText(this.opponentString);
                         }
                         bestScore = Math.max(bestScore, score);
                         alpha = Math.max(alpha, score);
@@ -177,28 +217,28 @@ public class MinimaxBot extends Bot {
             bestScore = Integer.MAX_VALUE;
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
-                    if (UtilityFunction.isWorthy(buttons, i, j, "O")) {
+                    if (UtilityFunction.isWorthy(buttons, i, j, this.opponentString)) {
                         int xIncrement = 0;
-                        buttons[i][j].setText("X");
+                        buttons[i][j].setText(this.playerString);
                         boolean up = false, right = false, down = false, left = false;
-                        if (i - 1 >= 0 && buttons[i - 1][j].getText().equals("O")) {
+                        if (i - 1 >= 0 && buttons[i - 1][j].getText().equals(this.opponentString)) {
                             up = true;
-                            buttons[i - 1][j].setText("X");
+                            buttons[i - 1][j].setText(this.playerString);
                             xIncrement++;
                         }
-                        if (j + 1 < 8 && buttons[i][j + 1].getText().equals("O")) {
+                        if (j + 1 < 8 && buttons[i][j + 1].getText().equals(this.opponentString)) {
                             xIncrement++;
-                            buttons[i][j + 1].setText("X");
+                            buttons[i][j + 1].setText(this.playerString);
                             right = true;
                         }
-                        if (i + 1 < 8 && buttons[i + 1][j].getText().equals("O")) {
+                        if (i + 1 < 8 && buttons[i + 1][j].getText().equals(this.opponentString)) {
                             xIncrement++;
-                            buttons[i + 1][j].setText("X");
+                            buttons[i + 1][j].setText(this.playerString);
                             down = true;
                         }
-                        if (j - 1 >= 0 && buttons[i][j - 1].getText().equals("O")) {
+                        if (j - 1 >= 0 && buttons[i][j - 1].getText().equals(this.opponentString)) {
                             xIncrement++;
-                            buttons[i][j - 1].setText("X");
+                            buttons[i][j - 1].setText(this.playerString);
                             left = true;
                         }
                         int score = minimax(
@@ -213,16 +253,16 @@ public class MinimaxBot extends Bot {
                                 xIncrement
                         );
                         if (up) {
-                            buttons[i - 1][j].setText("O");
+                            buttons[i - 1][j].setText(this.opponentString);
                         }
                         if (right) {
-                            buttons[i][j + 1].setText("O");
+                            buttons[i][j + 1].setText(this.opponentString);
                         }
                         if (down) {
-                            buttons[i + 1][j].setText("O");
+                            buttons[i + 1][j].setText(this.opponentString);
                         }
                         if (left) {
-                            buttons[i][j - 1].setText("O");
+                            buttons[i][j - 1].setText(this.opponentString);
                         }
                         buttons[i][j].setText("");
                         bestScore = Math.min(bestScore, score);

@@ -93,10 +93,10 @@ public class OutputFrameController {
         // Start bot
         switch (this.botOAlgo) {
             case "Local Search (HC)":
-                this.botO = new LocalSearchBot();
+                this.botO = new LocalSearchBot("O");
                 break;
             case "Min Max":
-                this.botO = new MinimaxBot();
+                this.botO = new MinimaxBot("O");
                 break;
             case "Genetic Algorithm":
                 this.botO = new GeneticBot();
@@ -108,10 +108,10 @@ public class OutputFrameController {
         if (this.isBotVsBot) {
             switch (this.botXAlgo) {
                 case "Local Search (HC)":
-                    this.botX = new LocalSearchBot();
+                    this.botX = new LocalSearchBot("X");
                     break;
                 case "Min Max":
-                    this.botX = new MinimaxBot();
+                    this.botX = new MinimaxBot("X");
                     break;
                 case "Genetic Algorithm":
                     this.botX = new GeneticBot();
@@ -420,7 +420,7 @@ public class OutputFrameController {
 
     public void moveBotX() {
         
-        int[] botMove = this.botO.move(this);
+        int[] botMove = this.botX.move(this);
         int i = botMove[0];
         int j = botMove[1]; 
         
