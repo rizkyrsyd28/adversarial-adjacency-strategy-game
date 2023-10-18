@@ -18,7 +18,13 @@ public class GeneticFunction {
     public static GeneticTree constructMiniMaxTree(Population population, boolean isO){
         Population pop = new Population(population);
         GeneticTree root = new GeneticTree(pop.getPopulationSize());
-        List<Chromosome> chromosomes = new ArrayList<>(pop.getChromosomes()); // copy the chromosomes
+        List<Chromosome> chromosomes = new ArrayList<Chromosome>(); // copy the chromosomes
+        for(Chromosome chromosome : pop.getChromosomes()){
+            chromosomes.add(new Chromosome(chromosome));
+          
+        }
+       
+        
         for(Chromosome chromosome : chromosomes){
             constructMiniMaxSubTree(chromosome, root, isO);
         }

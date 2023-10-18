@@ -60,9 +60,12 @@ public class Population {
      * @param other
      */
     public Population(Population other) {
-        this.chromosomes = new ArrayList<>(other.chromosomes);
+        this.chromosomes = new ArrayList<Chromosome>();
+        for(Chromosome chromosome : other.getChromosomes()){
+            this.chromosomes.add(new Chromosome(chromosome));
+        }
         this.populationSize = other.populationSize;
-        this.geneSet = new HashSet<>(other.geneSet);
+        this.geneSet = new HashSet<Integer>(other.getGeneSet());
         this.crossoverPoint = other.crossoverPoint;
         this.chromosomeLength = other.chromosomeLength;
         this.buttons = other.buttons;
@@ -257,5 +260,14 @@ public class Population {
         for(Chromosome chromosome : this.chromosomes){
             chromosome.recalculateFitnessValue(this.buttons);
         }
+    }
+
+    public Chromosome getChromosomeByID(String chromosomeID){
+        for(Chromosome chromosome : this.chromosomes){
+            if(chromosome.getChromosomeID().equals(chromosomeID)){
+                return chromosome;
+            }
+        }
+        return null;
     }
 }
