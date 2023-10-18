@@ -22,19 +22,13 @@ public class MinimaxBot extends Bot {
     @Override
     public int[] move(OutputFrameController of) {
 
-        int depthLimit = 4;
-        if (of.getRoundsLeft() < depthLimit) {
-            depthLimit = of.getRoundsLeft();
+        int depthLimit = 8;
+        if (of.getRoundsLeft() * 2 < depthLimit) {
+            depthLimit = of.getRoundsLeft() * 2;
         }
 
-        int bestScore = Integer.MIN_VALUE, nextRound;
-        if (of.isBotFirst()) {
-            nextRound = depthLimit;
-        } else {
-            nextRound = depthLimit - 1;
-        }
+        int bestScore = Integer.MIN_VALUE;
         int[] bestMove = new int[2];
-
 
         int bestGreedy = Integer.MIN_VALUE;
         for (int i = 0; i < of.getButtons().length; i++) {
@@ -90,14 +84,13 @@ public class MinimaxBot extends Bot {
                     }
 
                     int score = minimax(
-                            nextRound,
+                            depthLimit - 1,
                             Integer.MIN_VALUE,
                             Integer.MAX_VALUE,
                             false,
                             of.getPlayerXScore() - oIncrement,
                             of.getPlayerOScore() + 1 + oIncrement,
-                            of.getButtons(),
-                            of.isBotFirst()
+                            of.getButtons()
                     );
                     of.getButtons()[i][j].setText("");
                     if (up) {
@@ -132,11 +125,10 @@ public class MinimaxBot extends Bot {
      * @param xScore        The score of the X player.
      * @param oScore        The score of the O player.
      * @param buttons       The current state of the game board represented as a 2D array of Buttons.
-     * @param isBotFirst    Indicates whether the bot is the first player.
      * @return The best score for the current game state.
      */
     public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int xScore, int oScore,
-                       Button[][] buttons, boolean isBotFirst) {
+                       Button[][] buttons) {
         if (currentRound == 0) {
             if (this.playerString.equals("O")) {
                 return (oScore - xScore);
@@ -145,13 +137,9 @@ public class MinimaxBot extends Bot {
             }
         }
 
-        int bestScore, nextRound;
+        int bestScore;
         if (isMaximizing) {
             bestScore = Integer.MIN_VALUE;
-            nextRound = currentRound;
-            if (!isBotFirst) {
-                nextRound -= 1;
-            }
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
                     if (UtilityFunction.isWorthy(buttons, i, j, this.opponentString)) {
@@ -180,14 +168,13 @@ public class MinimaxBot extends Bot {
                         }
 
                         int score = minimax(
-                                nextRound,
+                                currentRound - 1,
                                 alpha,
                                 beta,
                                 false,
                                 xScore - oIncrement,
                                 oScore + 1 + oIncrement,
-                                buttons,
-                                isBotFirst
+                                buttons
                         );
 
                         buttons[i][j].setText("");
@@ -212,10 +199,6 @@ public class MinimaxBot extends Bot {
                 }
             }
         } else {
-            nextRound = currentRound;
-            if (isBotFirst) {
-                nextRound -= 1;
-            }
             bestScore = Integer.MAX_VALUE;
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
@@ -244,14 +227,13 @@ public class MinimaxBot extends Bot {
                             left = true;
                         }
                         int score = minimax(
-                                nextRound,
+                                currentRound - 1,
                                 alpha,
                                 beta,
                                 true,
                                 xScore + 1 + xIncrement,
                                 oScore - xIncrement,
-                                buttons,
-                                isBotFirst
+                                buttons
                         );
                         if (up) {
                             buttons[i - 1][j].setText(this.opponentString);
