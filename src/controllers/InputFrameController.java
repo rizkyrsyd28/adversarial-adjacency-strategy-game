@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.stage.Stage;
-
+import utils.BotAnimated;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -111,10 +111,10 @@ public class InputFrameController{
             secondaryStage.setResizable(true);
             secondaryStage.show();
 
-            if (this.isBotVsBot.isSelected()) {
-                outputFC.playBotVsBot();
-            }
-            
+            BotAnimated animated = new BotAnimated(outputFC);
+            Thread thread = new Thread(animated);
+            thread.setDaemon(true);
+            thread.start();
         }
     }
 

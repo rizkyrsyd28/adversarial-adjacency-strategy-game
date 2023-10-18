@@ -58,6 +58,7 @@ public class OutputFrameController {
     private int roundsLeft;
     private boolean isBotFirst;
     private boolean isBotVsBot; 
+    private boolean exitGame = false; 
     private Bot botX;
     private Bot botO;
     private String botXAlgo;
@@ -213,7 +214,7 @@ public class OutputFrameController {
      * @param j The column number of the button clicked.
      *
      */
-    private void selectedCoordinates(int i, int j){
+    public void selectedCoordinates(int i, int j){
         // Invalid when a button with an X or an O is clicked.
         if (!this.buttons[i][j].getText().equals(""))
             new Alert(Alert.AlertType.ERROR, "Invalid coordinates: Try again!").showAndWait();
@@ -397,13 +398,12 @@ public class OutputFrameController {
 
     public void playBotVsBot() {
         while (this.roundsLeft != 0) {
-            
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
+            
             int[] botMove = this.botO.move(this);
             int i = botMove[0];
             int j = botMove[1]; 
@@ -416,6 +416,22 @@ public class OutputFrameController {
             
             this.selectedCoordinates(i, j);
         }
+    }
+
+    public void moveBotX() {
+        
+        int[] botMove = this.botO.move(this);
+        int i = botMove[0];
+        int j = botMove[1]; 
+        
+        if (!this.buttons[i][j].getText().equals("")) {
+            new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+            System.exit(1);
+            return;
+        }
+        
+        this.selectedCoordinates(i, j);
+
     }
 
     private void moveBot() {
@@ -459,5 +475,10 @@ public class OutputFrameController {
 
     public Button[][] getButtons() {
         return buttons;
+    }
+
+
+    public void setColor(OutputFrameController ofc, int i, int j) {
+        ofc.getButtons()[i][j].setText("J");
     }
 }
