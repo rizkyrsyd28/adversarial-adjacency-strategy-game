@@ -22,17 +22,12 @@ public class MinimaxBot extends Bot {
     @Override
     public int[] move(OutputFrameController of) {
 
-        int depthLimit = 4;
-        if (of.getRoundsLeft() < depthLimit) {
-            depthLimit = of.getRoundsLeft();
+        int depthLimit = 8;
+        if (of.getRoundsLeft() * 2 < depthLimit) {
+            depthLimit = of.getRoundsLeft() * 2;
         }
 
-        int bestScore = Integer.MIN_VALUE, nextRound;
-        if (of.isBotFirst()) {
-            nextRound = depthLimit;
-        } else {
-            nextRound = depthLimit - 1;
-        }
+        int bestScore = Integer.MIN_VALUE;
         int[] bestMove = new int[2];
 
 
@@ -90,7 +85,7 @@ public class MinimaxBot extends Bot {
                     }
 
                     int score = minimax(
-                            nextRound,
+                            depthLimit - 1,
                             Integer.MIN_VALUE,
                             Integer.MAX_VALUE,
                             false,
@@ -148,10 +143,6 @@ public class MinimaxBot extends Bot {
         int bestScore, nextRound;
         if (isMaximizing) {
             bestScore = Integer.MIN_VALUE;
-            nextRound = currentRound;
-            if (!isBotFirst) {
-                nextRound -= 1;
-            }
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
                     if (UtilityFunction.isWorthy(buttons, i, j, this.opponentString)) {
@@ -180,7 +171,7 @@ public class MinimaxBot extends Bot {
                         }
 
                         int score = minimax(
-                                nextRound,
+                                currentRound - 1,
                                 alpha,
                                 beta,
                                 false,
@@ -212,10 +203,6 @@ public class MinimaxBot extends Bot {
                 }
             }
         } else {
-            nextRound = currentRound;
-            if (isBotFirst) {
-                nextRound -= 1;
-            }
             bestScore = Integer.MAX_VALUE;
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
@@ -244,7 +231,7 @@ public class MinimaxBot extends Bot {
                             left = true;
                         }
                         int score = minimax(
-                                nextRound,
+                                currentRound - 1,
                                 alpha,
                                 beta,
                                 true,
