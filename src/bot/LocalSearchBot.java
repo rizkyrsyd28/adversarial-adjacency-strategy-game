@@ -18,12 +18,12 @@ public class LocalSearchBot extends Bot {
 
     @Override
     public int[] move(OutputFrameController outputFrameController) {
-        PriorityQueue<int[]> p = new PriorityQueue<>(Comparator.comparing(arr -> arr[2]));
-        int pQueue;
+        int[] bestMove = new int[2];
+        int bestGreedy = Integer.MIN_VALUE;
         for (int i = 0; i < outputFrameController.getButtons().length; i++) {
             for (int j = 0; j < outputFrameController.getButtons()[i].length; j++) {
                 if (outputFrameController.getButtons()[i][j].getText().equals("")) {
-                    pQueue = 1;
+                    int pQueue = 1;
                     if (i - 1 >= 0 && outputFrameController.getButtons()[i - 1][j].getText().equals(this.opponentString)) {
                         pQueue++;
                     }
@@ -36,15 +36,15 @@ public class LocalSearchBot extends Bot {
                     if (j + 1 < 8 && outputFrameController.getButtons()[i][j + 1].getText().equals(this.opponentString)) {
                         pQueue++;
                     }
-                    p.offer(new int[]{i, j, pQueue});
+                    if (pQueue >= bestGreedy) {
+                        bestGreedy = pQueue;
+                        bestMove[0] = i;
+                        bestMove[1] = j;
+                    }
                 }
             }
         }
-        int[] lastElement = null;
-        while (!p.isEmpty()) {
-            lastElement = p.poll();
-        }
-        assert lastElement != null;
-        return new int[]{lastElement[0], lastElement[1]};
+
+        return bestMove;
     }
 }
