@@ -86,6 +86,16 @@ public class Chromosome {
 
     }
 
+    /**
+     * Copy Constructor
+     * @param chrom
+     */
+    public Chromosome(Chromosome chrom) {
+        this.genes = new ArrayList<>(chrom.getGenes());
+        this.fitnessValue = chrom.getFitnessValue();
+        this.chromosomeID = chrom.getChromosomeID();
+    }
+
     // SETTER
     public void setGenes(List<Integer> genes) {
         this.genes = genes;

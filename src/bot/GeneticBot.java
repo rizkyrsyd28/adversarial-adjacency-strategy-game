@@ -8,6 +8,7 @@ public class GeneticBot extends Bot {
     public static final int MIN_ITERATION = 5;
     public static final int MAX_ITERATION = 100;
     public static final int POPULATION_SIZE = 100;
+    public static final int CHROMOSOME_LENGTH = 5;
 
     public GeneticBot(String playerString) {
         this.playerString = playerString;
@@ -22,7 +23,7 @@ public class GeneticBot extends Bot {
     @Override
     public int[] move(OutputFrameController outputFrameController) {
         //initiate
-        Population population = new Population(POPULATION_SIZE, 5, 3, outputFrameController.getButtons());
+        Population population = new Population(POPULATION_SIZE, CHROMOSOME_LENGTH, 3, outputFrameController.getButtons());
         Population population_child = new Population(population);
 
         //perform crossover and mutation in child
@@ -30,17 +31,23 @@ public class GeneticBot extends Bot {
         GeneticTree tree;
         int iteration = 0;
         while (true) {
-            
+           
             // do population selection
             population = Population.PopulationSelection(population, population_child);
             
             
             if(iteration >= MIN_ITERATION){
+       
                 // construct minimax tree
                 tree = GeneticFunction.constructMiniMaxTree(population, playerString.equals("O"));
+                
+              
                 tree.miniMax(true);
+               
                 if( tree.getData().getFitnessValue() > 0){
-                    int[] move =  Chromosome.decodeGene(tree.getData().getGene());
+                    Chromosome candidate = population.getChromosomeByID(tree.getData().getChromosomeID());
+                    int[] move =  Chromosome.decodeGene(candidate.getGenes().get(0));
+
                     return move;
                 }
                 
