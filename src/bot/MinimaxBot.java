@@ -20,41 +20,38 @@ public class MinimaxBot extends Bot {
     }
 
     @Override
+    /*
+     * Finds the best move for the bot player in the Adjacency Strategy Game using the Minimax algorithm with Alpha-Beta Pruning.
+     *
+     * @param buttons     The current state of the game board represented as a 2D array of Buttons.
+     * @param roundsLeft  The number of rounds left in the game.
+     * @param xScore      The score of the X player.
+     * @param oScore      The score of the O player.
+     * @param isBotFirst  Indicates whether the bot is the first player.
+     * @return An array of length 2 representing the row and column indices of the best move for the bot.
+     */
     public int[] move(OutputFrameController of) {
+        int bestScore = Integer.MIN_VALUE, nextRound;
 
-        int depthLimit = 8;
-        if (of.getRoundsLeft() * 2 < depthLimit) {
-            depthLimit = of.getRoundsLeft() * 2;
+        int maxDepth = 4;
+        if (of.getRoundsLeft() < maxDepth) {
+            maxDepth = of.getRoundsLeft();
         }
 
-        int bestScore = Integer.MIN_VALUE;
-        int[] bestMove = new int[2];
-
-        int bestGreedy = Integer.MIN_VALUE;
-        for (int i = 0; i < of.getButtons().length; i++) {
-            for (int j = 0; j < of.getButtons()[i].length; j++) {
-                if (of.getButtons()[i][j].getText().equals("")) {
-                    int pQueue = 1;
-                    if (i - 1 >= 0 && of.getButtons()[i - 1][j].getText().equals(this.opponentString)) {
-                        pQueue++;
-                    }
-                    if (j - 1 >= 0 && of.getButtons()[i][j - 1].getText().equals(this.opponentString)) {
-                        pQueue++;
-                    }
-                    if (i + 1 < 8 && of.getButtons()[i + 1][j].getText().equals(this.opponentString)) {
-                        pQueue++;
-                    }
-                    if (j + 1 < 8 && of.getButtons()[i][j + 1].getText().equals(this.opponentString)) {
-                        pQueue++;
-                    }
-                    if (pQueue >= bestGreedy) {
-                        bestGreedy = pQueue;
-                        bestMove[0] = i;
-                        bestMove[1] = j;
-                    }
-                }
+        if (of.isBotFirst()) {
+            if (this.playerString.equals("X")) {
+                nextRound = maxDepth - 1;
+            } else {
+                nextRound = maxDepth;
+            }
+        } else {
+            if (this.playerString.equals("X")) {
+                nextRound = maxDepth;
+            } else {
+                nextRound = maxDepth - 1;
             }
         }
+        int[] bestMove = new int[2];
 
         for (int i = 0; i < of.getButtons().length; i++) {
             for (int j = 0; j < of.getButtons()[i].length; j++) {
@@ -84,13 +81,15 @@ public class MinimaxBot extends Bot {
                     }
 
                     int score = minimax(
-                            depthLimit - 1,
+                            nextRound,
                             Integer.MIN_VALUE,
                             Integer.MAX_VALUE,
                             false,
                             of.getPlayerXScore() - oIncrement,
                             of.getPlayerOScore() + 1 + oIncrement,
-                            of.getButtons()
+                            of.getButtons(),
+                            of.isBotFirst(),
+                            oIncrement
                     );
                     of.getButtons()[i][j].setText("");
                     if (up) {
@@ -125,21 +124,26 @@ public class MinimaxBot extends Bot {
      * @param xScore        The score of the X player.
      * @param oScore        The score of the O player.
      * @param buttons       The current state of the game board represented as a 2D array of Buttons.
+     * @param isBotFirst    Indicates whether the bot is the first player.
      * @return The best score for the current game state.
      */
-    public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int xScore, int oScore,
-                       Button[][] buttons) {
+    public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int xScore, int oScore, Button[][] buttons, boolean
+            isBotFirst, int eat) {
         if (currentRound == 0) {
             if (this.playerString.equals("O")) {
-                return (oScore - xScore);
+                return (oScore - xScore) + (eat);
             } else {
-                return (xScore - oScore);
+                return (xScore - oScore) + (eat);
             }
         }
 
-        int bestScore;
+        int bestScore, nextRound;
         if (isMaximizing) {
             bestScore = Integer.MIN_VALUE;
+            nextRound = currentRound;
+            if ((!isBotFirst && this.playerString.equals("O")) || (isBotFirst && this.playerString.equals("X"))) {
+                nextRound -= 1;
+            }
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
                     if (UtilityFunction.isWorthy(buttons, i, j, this.opponentString)) {
@@ -168,13 +172,15 @@ public class MinimaxBot extends Bot {
                         }
 
                         int score = minimax(
-                                currentRound - 1,
+                                nextRound,
                                 alpha,
                                 beta,
                                 false,
                                 xScore - oIncrement,
                                 oScore + 1 + oIncrement,
-                                buttons
+                                buttons,
+                                isBotFirst,
+                                oIncrement
                         );
 
                         buttons[i][j].setText("");
@@ -199,53 +205,59 @@ public class MinimaxBot extends Bot {
                 }
             }
         } else {
+            nextRound = currentRound;
+            if ((isBotFirst && this.playerString.equals("O")) || (!isBotFirst && this.playerString.equals("X"))) {
+                nextRound -= 1;
+            }
             bestScore = Integer.MAX_VALUE;
             for (int i = 0; i < buttons.length; i++) {
                 for (int j = 0; j < buttons[i].length; j++) {
-                    if (UtilityFunction.isWorthy(buttons, i, j, this.opponentString)) {
+                    if (UtilityFunction.isWorthy(buttons, i, j, this.playerString)) {
                         int xIncrement = 0;
-                        buttons[i][j].setText(this.playerString);
+                        buttons[i][j].setText(this.opponentString);
                         boolean up = false, right = false, down = false, left = false;
-                        if (i - 1 >= 0 && buttons[i - 1][j].getText().equals(this.opponentString)) {
+                        if (i - 1 >= 0 && buttons[i - 1][j].getText().equals(this.playerString)) {
                             up = true;
-                            buttons[i - 1][j].setText(this.playerString);
+                            buttons[i - 1][j].setText(this.opponentString);
                             xIncrement++;
                         }
-                        if (j + 1 < 8 && buttons[i][j + 1].getText().equals(this.opponentString)) {
+                        if (j + 1 < 8 && buttons[i][j + 1].getText().equals(this.playerString)) {
                             xIncrement++;
-                            buttons[i][j + 1].setText(this.playerString);
+                            buttons[i][j + 1].setText(this.opponentString);
                             right = true;
                         }
-                        if (i + 1 < 8 && buttons[i + 1][j].getText().equals(this.opponentString)) {
+                        if (i + 1 < 8 && buttons[i + 1][j].getText().equals(this.playerString)) {
                             xIncrement++;
-                            buttons[i + 1][j].setText(this.playerString);
+                            buttons[i + 1][j].setText(this.opponentString);
                             down = true;
                         }
-                        if (j - 1 >= 0 && buttons[i][j - 1].getText().equals(this.opponentString)) {
+                        if (j - 1 >= 0 && buttons[i][j - 1].getText().equals(this.playerString)) {
                             xIncrement++;
-                            buttons[i][j - 1].setText(this.playerString);
+                            buttons[i][j - 1].setText(this.opponentString);
                             left = true;
                         }
                         int score = minimax(
-                                currentRound - 1,
+                                nextRound,
                                 alpha,
                                 beta,
                                 true,
                                 xScore + 1 + xIncrement,
                                 oScore - xIncrement,
-                                buttons
+                                buttons,
+                                isBotFirst,
+                                xIncrement
                         );
                         if (up) {
-                            buttons[i - 1][j].setText(this.opponentString);
+                            buttons[i - 1][j].setText(this.playerString);
                         }
                         if (right) {
-                            buttons[i][j + 1].setText(this.opponentString);
+                            buttons[i][j + 1].setText(this.playerString);
                         }
                         if (down) {
-                            buttons[i + 1][j].setText(this.opponentString);
+                            buttons[i + 1][j].setText(this.playerString);
                         }
                         if (left) {
-                            buttons[i][j - 1].setText(this.opponentString);
+                            buttons[i][j - 1].setText(this.playerString);
                         }
                         buttons[i][j].setText("");
                         bestScore = Math.min(bestScore, score);
