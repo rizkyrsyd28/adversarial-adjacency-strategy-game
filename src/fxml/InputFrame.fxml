@@ -11,14 +11,14 @@
     <padding><Insets top="5" bottom="5" left="5" right="5"/></padding>
     <top>
         <GridPane>
-            <Label text="Player 1/Default Bot (X): " GridPane.rowIndex="0" GridPane.columnIndex="0">
+            <Label text="Player 1 (X): " GridPane.rowIndex="0" GridPane.columnIndex="0">
                 <font>
                     <Font name="Arial Bold" size="12"/>
                 </font>
             </Label>
             <TextField fx:id="player1" GridPane.rowIndex="0" GridPane.columnIndex="1" />
 
-            <Label text="Player 2 (O): " GridPane.rowIndex="1" GridPane.columnIndex="0">
+            <Label text="Player 2 / Default Bot (O): " GridPane.rowIndex="1" GridPane.columnIndex="0">
                 <font>
                     <Font name="Arial Bold" size="12"/>
                 </font>

@@ -57,8 +57,11 @@ public class OutputFrameController {
     private int playerOScore;
     private int roundsLeft;
     private boolean isBotFirst;
-    private Bot bot1;
-    private Bot bot2;
+    private boolean isBotVsBot; 
+    private Bot botX;
+    private Bot botO;
+    private String botXAlgo;
+    private String botOAlgo;
 
     private static final int ROW = 8;
     private static final int COL = 8;
@@ -76,19 +79,53 @@ public class OutputFrameController {
      * @param isBotFirst True if bot is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String algo1, String algo2, boolean isVSBot){
+    void getInput(String name1, String name2, String rounds, boolean isBotFirst, String algo1, String algo2, boolean isBotVsBot){
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
         this.isBotFirst = isBotFirst;
+        this.isBotVsBot = isBotVsBot;
+        this.botXAlgo = algo1;
+        this.botOAlgo = algo2;
 
         // Start bot
-        this.bot1 = new MinimaxBot();
-        this.playerXTurn = !isBotFirst;
-        if (this.isBotFirst) {
-            this.moveBot();
+        switch (this.botOAlgo) {
+            case "Local Search (HC)":
+                this.botO = new LocalSearchBot();
+                break;
+            case "Min Max":
+                this.botO = new MinimaxBot();
+                break;
+            case "Genetic Algorithm":
+                this.botO = new GeneticBot();
+                break;
+            default:
+                break;
         }
+
+        if (this.isBotVsBot) {
+            switch (this.botXAlgo) {
+                case "Local Search (HC)":
+                    this.botX = new LocalSearchBot();
+                    break;
+                case "Min Max":
+                    this.botX = new MinimaxBot();
+                    break;
+                case "Genetic Algorithm":
+                    this.botX = new GeneticBot();
+                    break;
+                default:
+                    break;
+            }
+        }
+        else {
+            if (this.isBotFirst) {
+                this.moveBot();
+            }
+        }
+        // this.botO = new MinimaxBot();
+        // this.playerXTurn = !isBotFirst;
     }
 
 
@@ -358,6 +395,29 @@ public class OutputFrameController {
         primaryStage.show();
     }
 
+    public void playBotVsBot() {
+        while (this.roundsLeft != 0) {
+            
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+            int[] botMove = this.botO.move(this);
+            int i = botMove[0];
+            int j = botMove[1]; 
+            
+            if (!this.buttons[i][j].getText().equals("")) {
+                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+                System.exit(1);
+                return;
+            }
+            
+            this.selectedCoordinates(i, j);
+        }
+    }
+
     private void moveBot() {
 //        int depth = 4;
 //        if (this.roundsLeft < depth) {
@@ -367,7 +427,8 @@ public class OutputFrameController {
 //        int[] botMove = this.bot.makeBestHillClimbMove(this.buttons);
 //        int[] botMove = this.bot.randomRestart(this.buttons, this.roundsLeft, this.isBotFirst);
 //        int[] botMove = this.bot.hillClimb(this.buttons, this.roundsLeft, this.isBotFirst);
-        int[] botMove = this.bot1.move(this);
+
+        int[] botMove = this.botO.move(this);
         int i = botMove[0];
         int j = botMove[1];
 
