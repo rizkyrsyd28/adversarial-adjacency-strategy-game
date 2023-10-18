@@ -20,7 +20,7 @@ public class BotAnimated extends Task<Void> {
                     this.outputFC.moveBotX();
                 });
                 
-                Thread.sleep(2000);
+                Thread.sleep(10000);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

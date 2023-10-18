@@ -90,6 +90,7 @@ public class OutputFrameController {
         this.botXAlgo = algo1;
         this.botOAlgo = algo2;
 
+        // System.out.printf("");
         // Start bot
         switch (this.botOAlgo) {
             case "Local Search (HC)":
@@ -104,7 +105,8 @@ public class OutputFrameController {
             default:
                 break;
         }
-
+        
+        this.playerXTurn = !this.isBotFirst;
         if (this.isBotVsBot) {
             switch (this.botXAlgo) {
                 case "Local Search (HC)":
@@ -396,28 +398,6 @@ public class OutputFrameController {
         primaryStage.show();
     }
 
-    public void playBotVsBot() {
-        while (this.roundsLeft != 0) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-            
-            int[] botMove = this.botO.move(this);
-            int i = botMove[0];
-            int j = botMove[1]; 
-            
-            if (!this.buttons[i][j].getText().equals("")) {
-                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
-                System.exit(1);
-                return;
-            }
-            
-            this.selectedCoordinates(i, j);
-        }
-    }
-
     public void moveBotX() {
         
         int[] botMove = this.botX.move(this);
@@ -429,7 +409,7 @@ public class OutputFrameController {
             System.exit(1);
             return;
         }
-        
+        System.out.println("Player X : (" + j + "," + i + ")");
         this.selectedCoordinates(i, j);
 
     }
@@ -454,6 +434,7 @@ public class OutputFrameController {
             return;
         }
 
+        System.out.println("Player O : (" + j + "," + i + ")");
         this.selectedCoordinates(i, j);
     }
 
