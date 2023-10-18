@@ -80,13 +80,22 @@ public class MinimaxBot extends Bot {
                         left = true;
                     }
 
+                    int playerScore, opponentScore;
+                    if (this.playerString.equals("O")) {
+                        playerScore = of.getPlayerOScore();
+                        opponentScore = of.getPlayerXScore();
+                    } else {
+                        playerScore = of.getPlayerXScore();
+                        opponentScore = of.getPlayerOScore();
+                    }
+
                     int score = minimax(
                             nextRound,
                             Integer.MIN_VALUE,
                             Integer.MAX_VALUE,
                             false,
-                            of.getPlayerXScore() - oIncrement,
-                            of.getPlayerOScore() + 1 + oIncrement,
+                            opponentScore - oIncrement,
+                            playerScore + 1 + oIncrement,
                             of.getButtons(),
                             of.isBotFirst(),
                             oIncrement
@@ -121,20 +130,16 @@ public class MinimaxBot extends Bot {
      * @param alpha         The alpha value for Alpha-Beta Pruning.
      * @param beta          The beta value for Alpha-Beta Pruning.
      * @param isMaximizing  Indicates whether it is the maximizing player's turn (true for O, false for X).
-     * @param xScore        The score of the X player.
-     * @param oScore        The score of the O player.
+     * @param opponentScore The score of the X player.
+     * @param playerScore   The score of the O player.
      * @param buttons       The current state of the game board represented as a 2D array of Buttons.
      * @param isBotFirst    Indicates whether the bot is the first player.
      * @return The best score for the current game state.
      */
-    public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int xScore, int oScore, Button[][] buttons, boolean
+    public int minimax(int currentRound, int alpha, int beta, boolean isMaximizing, int opponentScore, int playerScore, Button[][] buttons, boolean
             isBotFirst, int eat) {
         if (currentRound == 0) {
-            if (this.playerString.equals("O")) {
-                return (oScore - xScore) + (eat);
-            } else {
-                return (xScore - oScore) + (eat);
-            }
+            return (playerScore - opponentScore) + (eat);
         }
 
         int bestScore, nextRound;
@@ -176,8 +181,8 @@ public class MinimaxBot extends Bot {
                                 alpha,
                                 beta,
                                 false,
-                                xScore - oIncrement,
-                                oScore + 1 + oIncrement,
+                                opponentScore - oIncrement,
+                                playerScore + 1 + oIncrement,
                                 buttons,
                                 isBotFirst,
                                 oIncrement
@@ -241,8 +246,8 @@ public class MinimaxBot extends Bot {
                                 alpha,
                                 beta,
                                 true,
-                                xScore + 1 + xIncrement,
-                                oScore - xIncrement,
+                                opponentScore + 1 + xIncrement,
+                                playerScore - xIncrement,
                                 buttons,
                                 isBotFirst,
                                 xIncrement
