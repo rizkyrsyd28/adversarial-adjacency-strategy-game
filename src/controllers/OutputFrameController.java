@@ -100,7 +100,7 @@ public class OutputFrameController {
                 this.botO = new MinimaxBot("O");
                 break;
             case "Genetic Algorithm":
-                this.botO = new GeneticBot();
+                this.botO = new GeneticBot("O");
                 break;
             default:
                 break;
@@ -116,7 +116,7 @@ public class OutputFrameController {
                     this.botX = new MinimaxBot("X");
                     break;
                 case "Genetic Algorithm":
-                    this.botX = new GeneticBot();
+                    this.botX = new GeneticBot("X");
                     break;
                 default:
                     break;

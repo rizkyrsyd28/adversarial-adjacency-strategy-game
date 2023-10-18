@@ -1,4 +1,6 @@
-package structs;
+package genetic_package.unit_test;
+import genetic_package.GeneticTree;
+import genetic_package.Population;
 import utils.*;
 
 public class Test2 {
@@ -8,7 +10,7 @@ public class Test2 {
         // population.populationCrossoverAndMutation();
         // System.out.println("\nAfter crossover and mutation: \n");
         // population.debugPopulation();
-        GeneticTree tree = GeneticFunction.constructMiniMaxTree(population);
+        GeneticTree tree = GeneticFunction.constructMiniMaxTree(population, true);
         tree.miniMax(true);
         tree.debugTree(0);
     }

@@ -1,4 +1,4 @@
-package structs;
+package genetic_package;
 
 public class GeneticNode {
     private int FitnessValue;
