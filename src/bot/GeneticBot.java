@@ -57,7 +57,7 @@ public class GeneticBot extends Bot {
 
         //if failed
         System.out.println("No positive fitness value found");
-        tree = GeneticFunction.constructMiniMaxTree(population);
+        tree = GeneticFunction.constructMiniMaxTree(population, playerString.equals("O"));
         tree.miniMax(true);
         return Chromosome.decodeGene(tree.getData().getGene());
 
