@@ -409,20 +409,12 @@ public class OutputFrameController {
             System.exit(1);
             return;
         }
-        System.out.println("Player X : (" + j + "," + i + ")");
+//        System.out.println("Player X : (" + j + "," + i + ")");
         this.selectedCoordinates(i, j);
 
     }
 
     private void moveBot() {
-//        int depth = 4;
-//        if (this.roundsLeft < depth) {
-//            depth = this.roundsLeft;
-//        }
-//        int[] botMove = this.bot.makeBestMove(this.buttons, depth, this.playerXScore, this.playerOScore, this.isBotFirst);
-//        int[] botMove = this.bot.makeBestHillClimbMove(this.buttons);
-//        int[] botMove = this.bot.randomRestart(this.buttons, this.roundsLeft, this.isBotFirst);
-//        int[] botMove = this.bot.hillClimb(this.buttons, this.roundsLeft, this.isBotFirst);
 
         int[] botMove = this.botO.move(this);
         int i = botMove[0];
@@ -434,7 +426,7 @@ public class OutputFrameController {
             return;
         }
 
-        System.out.println("Player O : (" + j + "," + i + ")");
+//        System.out.println("Player O : (" + j + "," + i + ")");
         this.selectedCoordinates(i, j);
     }
 
